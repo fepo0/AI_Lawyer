@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AI_Lawyer.Services;
 
 namespace AI_Lawyer
 {
@@ -49,6 +51,7 @@ namespace AI_Lawyer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly OpenAIService _openAIService = new OpenAIService();
         public CaseData ViewModel { get; set; } = new CaseData();
         public MainWindow()
         {
@@ -63,9 +66,20 @@ namespace AI_Lawyer
             LawsListBox.ItemsSource = laws;
         }
 
-        private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
+        private async void AnalyzeButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AnalyzeCase();
+
+            string caseText = ViewModel.CaseDescription;
+            if (!string.IsNullOrWhiteSpace(caseText))
+            {
+                string advice = await _openAIService.GetLegalAdviceAsync(caseText);
+                ViewModel.AnalysisResults.Add($"Консультация AI: {advice}");
+            }
+            else
+            {
+                MessageBox.Show("Введите описание дела перед запросом!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }
