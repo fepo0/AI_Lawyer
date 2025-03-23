@@ -8,8 +8,9 @@
         Title="AI Адвокат" Height="350" Width="600">
     <Grid>
         <TextBox Margin="10,30,10,204" Text="{Binding CaseDescription}" Height="100" AcceptsReturn="True"/>
-        <Button Content="Анализировать" Margin="10,130,10,174" Height="30" Click="AnalyzeButton_Click"/>
-        <ListBox ItemsSource="{Binding AnalysisResults}" Margin="10,160,10,10"/>
+        <ListBox x:Name="AnalysisListBox" ItemsSource="{Binding AnalysisResults}" Margin="300,160,10,30"/>
+        <ListBox x:Name="LawsListBox" Margin="10,160,290,30"/>
+        <Button Content="Анализировать" Margin="10,100,10,130" Height="30" Click="AnalyzeButton_Click"/>
 
     </Grid>
 </Window>

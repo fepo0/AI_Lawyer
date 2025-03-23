@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AI_Lawyer.Data;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -13,8 +14,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AI_Lawyer
 {
@@ -55,6 +54,13 @@ namespace AI_Lawyer
         {
             InitializeComponent();
             DataContext = ViewModel;
+            LoadLaws();
+        }
+
+        private void LoadLaws()
+        {
+            var laws = LawDatabase.GetLaws();
+            LawsListBox.ItemsSource = laws;
         }
 
         private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
