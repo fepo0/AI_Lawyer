@@ -1,21 +1,9 @@
 ﻿using AI_Lawyer.Data;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using AI_Lawyer.Services;
+
 
 namespace AI_Lawyer
 {
@@ -35,12 +23,11 @@ namespace AI_Lawyer
             set { _analysisResults = value; OnPropertyChanged("AnalysisResults"); }
         }
 
-        public void AnalyzeCase()
-        {
-            //Логика ИИ
-            AnalysisResults.Add("Найдена лазейка: Доказательства добыты незаконно.");
-            AnalysisResults.Add("Рекомендация: Оспорить допустимость доказательств.");
-        }
+        //public void AnalyzeCase()
+        //{
+        //    AnalysisResults.Add("Найдена лазейка: Доказательства добыты незаконно.");
+        //    AnalysisResults.Add("Рекомендация: Оспорить допустимость доказательств.");
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -51,7 +38,6 @@ namespace AI_Lawyer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly OpenAIService _openAIService = new OpenAIService();
         public CaseData ViewModel { get; set; } = new CaseData();
         public MainWindow()
         {
@@ -66,19 +52,20 @@ namespace AI_Lawyer
             LawsListBox.ItemsSource = laws;
         }
 
+        private readonly AIService aIService = new AIService();
         private async void AnalyzeButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.AnalyzeCase();
+            //ViewModel.AnalyzeCase();
 
-            string caseText = ViewModel.CaseDescription;
-            if (!string.IsNullOrWhiteSpace(caseText))
+            try
             {
-                string advice = await _openAIService.GetLegalAdviceAsync(caseText);
-                ViewModel.AnalysisResults.Add($"Консультация AI: {advice}");
+                string recommendations = await aIService.GetRecommendationsAsync(ViewModel.CaseDescription);
+                ViewModel.AnalysisResults.Clear();
+                ViewModel.AnalysisResults.Add(recommendations);
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Введите описание дела перед запросом!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
