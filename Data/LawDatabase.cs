@@ -30,5 +30,26 @@ namespace AI_Lawyer.Data
             }
             return laws;
         }
+
+        public static List<string> SearchLaws(string caseDescription)
+        {
+            var matchedLaws = new List<string>();
+
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var command = new MySqlCommand("SELECT ArticleNumber, Title, FROM Laws Content LIKE @desc", connection);
+                command.Parameters.AddWithValue("@desc", "%" + caseDescription + "%");
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        matchedLaws.Add($"{reader.GetString(0)} - {reader.GetString(1)}");
+                    }
+                }
+            }
+            return matchedLaws;
+        }
     }
 }
