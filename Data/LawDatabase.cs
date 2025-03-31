@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using System.Windows;
 
 
 namespace AI_Lawyer.Data
@@ -38,7 +39,8 @@ namespace AI_Lawyer.Data
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 connection.Open();
-                var command = new MySqlCommand("SELECT ArticleNumber, Title, FROM Laws Content LIKE @desc", connection);
+                //TODO: Разбить текст на слова
+                var command = new MySqlCommand("SELECT ArticleNumber, Title FROM Laws WHERE Content LIKE @desc", connection);
                 command.Parameters.AddWithValue("@desc", "%" + caseDescription + "%");
 
                 using (var reader = command.ExecuteReader())

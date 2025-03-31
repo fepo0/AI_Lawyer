@@ -23,11 +23,26 @@ namespace AI_Lawyer
             set { _analysisResults = value; OnPropertyChanged("AnalysisResults"); }
         }
 
-        //public void AnalyzeCase()
-        //{
-        //    AnalysisResults.Add("Найдена лазейка: Доказательства добыты незаконно.");
-        //    AnalysisResults.Add("Рекомендация: Оспорить допустимость доказательств.");
-        //}
+        private ObservableCollection<string> _matchedLaws = new ObservableCollection<string>();
+        public ObservableCollection<string> MatchedLaws
+        {
+            get { return _matchedLaws; }
+            set { _matchedLaws = value; OnPropertyChanged("MatchedLaws"); }
+        }
+
+        public void AnalyzeCase()
+        {
+            AnalysisResults.Clear();
+            AnalysisResults.Add("Найдена лазейка: Доказательства добыты незаконно.");
+            AnalysisResults.Add("Рекомендация: Оспорить допустимость доказательств.");
+
+            MatchedLaws.Clear();
+            var laws = Data.LawDatabase.SearchLaws(CaseDescription);
+            foreach (var law in laws)
+            {
+                MatchedLaws.Add(law);
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -39,6 +54,7 @@ namespace AI_Lawyer
     public partial class MainWindow : Window
     {
         public CaseData ViewModel { get; set; } = new CaseData();
+        private readonly AIService aIService = new AIService();
         public MainWindow()
         {
             InitializeComponent();
@@ -49,13 +65,15 @@ namespace AI_Lawyer
         private void LoadLaws()
         {
             var laws = LawDatabase.GetLaws();
-            LawsListBox.ItemsSource = laws;
+            ViewModel.MatchedLaws.Clear();
+            foreach (var law in laws)
+            {
+                ViewModel.MatchedLaws.Add(law);
+            }
         }
-
-        private readonly AIService aIService = new AIService();
         private async void AnalyzeButton_Click(object sender, RoutedEventArgs e)
         {
-            //ViewModel.AnalyzeCase();
+            ViewModel.AnalyzeCase();
 
             try
             {
