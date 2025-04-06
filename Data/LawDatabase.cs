@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 
@@ -39,9 +40,25 @@ namespace AI_Lawyer.Data
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 connection.Open();
-                //TODO: Разбить текст на слова
-                var command = new MySqlCommand("SELECT ArticleNumber, Title FROM Laws WHERE Content LIKE @desc", connection);
-                command.Parameters.AddWithValue("@desc", "%" + caseDescription + "%");
+                var words = caseDescription
+                    .Split(new[] { ' ', ',', '.', '!', '?', '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries)
+                    .Where(w => w.Length > 2)
+                    .ToArray();
+
+                if (words.Length == 0)
+                {
+                    return matchedLaws;
+                }
+
+                string query = "SELECT ArticleNumber, Title FROM Laws WHERE ";
+                query += string.Join(" OR ", words.Select((w, i) => $"Content LIKE @word{i}"));
+
+                var command = new MySqlCommand(query, connection);
+
+                for (int i = 0; i < words.Length; i++)
+                {
+                    command.Parameters.AddWithValue($"@word{i}", $"%{words[i]}%");
+                }
 
                 using (var reader = command.ExecuteReader())
                 {
