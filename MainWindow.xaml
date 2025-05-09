@@ -7,10 +7,24 @@
         mc:Ignorable="d"
         Title="AI Адвокат" Height="350" Width="600">
     <Grid>
-        <TextBox Margin="10,30,10,204" Text="{Binding CaseDescription}" Height="100" AcceptsReturn="True"/>
-        <ListBox x:Name="AnalysisListBox" ItemsSource="{Binding AnalysisResults}" Margin="300,160,10,30"/>
-        <ListBox x:Name="LawsListBox" ItemsSource="{Binding MatchedLaws}" Margin="10,160,290,30"/>
-        <Button Content="Анализировать" Margin="10,100,10,130" Height="30" Click="AnalyzeButton_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Content="Анализировать" Margin="10" Height="30" Click="AnalyzeButton_Click" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+        <TextBox Margin="10" Text="{Binding CaseDescription}" AcceptsReturn="True" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        
+        <ListBox x:Name="AnalysisListBox" ItemsSource="{Binding AnalysisResults}" Margin="10" Grid.Row="2" Grid.Column="1"/>
+        
+        <ListBox x:Name="LawsListBox" ItemsSource="{Binding MatchedLaws}" Margin="10" Grid.Row="2" Grid.Column="0"/>
 
     </Grid>
 </Window>

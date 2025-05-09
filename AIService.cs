@@ -22,7 +22,7 @@ namespace AI_Lawyer
                     new {role = "system", content = "Ты AI-адвокат, предоставляющий рекомендации по юредическим делам в Республике Беларусь."},
                     new {role = "user", content = caseDescription}
                 },
-                max_tokens = 150
+                max_tokens = 1000
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
